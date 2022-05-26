@@ -13,4 +13,7 @@ This server cleans that data and loads them in a specific format.
 
 Send a Post request here with the file as multipart/form
 
-<b>Make sure the parameter is called "file"</b>
+<b>Required Params:</b>
+
+- source : Can be "cd"(college duniya), "sk"(siksha), "x"(custom)
+- file : The file

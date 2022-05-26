@@ -38,8 +38,9 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            res = sanitize(filename=filename, source="sk")
-    return res
+            res, cols = sanitize(
+                filename=filename, source=request.form['source'])
+    return {'data': res, 'cols': cols}
 
 
 if __name__ == "__main__":

@@ -81,7 +81,7 @@ def sanitize(filename, source):
             df["course"].replace([old.strip()], new.strip(), inplace=True)
     df = df[alteredCols]
     print(df)
-    return df.to_json(orient='records')
+    return df.to_json(orient='records'), alteredCols
 
 
 def sanitizeString(string):
