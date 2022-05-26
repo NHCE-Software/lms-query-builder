@@ -9,7 +9,7 @@ This server cleans that data and loads them in a specific format.
 
         python3 server.py
 
-### /upload
+### <b>/upload</b>
 
 Send a Post request here with the file as multipart/form
 
