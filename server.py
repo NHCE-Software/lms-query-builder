@@ -1,8 +1,10 @@
-from flask import Flask
+import json
+from flask import Flask, jsonify
 import os
 from flask_cors import CORS
 
 from flask import Flask, flash, request, redirect, url_for
+from sqlalchemy import JSON
 from werkzeug.utils import secure_filename
 
 from core import sanitize
@@ -40,7 +42,8 @@ def upload_file():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             res, cols = sanitize(
                 filename=filename, source=request.form['source'])
-    return {'data': res, 'cols': cols}
+
+    return {'data': json.loads(res), 'cols': cols}
 
 
 if __name__ == "__main__":
