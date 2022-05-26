@@ -4,9 +4,10 @@ import pandas as pd
 
 
 mapper = {
-    "name": ["name", "first_name", "firstname", "last_name", "user_name", "from", "usersname", "studentname"],
+    "name": ["name", "first_name", "firstname", "last_name", "username", "user_name", "from", "usersname", "studentname"],
     "email": ["email", "user_email", "mail"],
-    "phonenumber": ["phonenumber", "phno", "fatherscontactnumber", "motherscontactnumber", "mobile", "phone_number", "phone", "contact", "contact_number", "studentmobile"],
+    "phonenumber": ["phonenumber", "phno", "fatherscontactnumber", "mobile", "phone_number", "phone", "contact", "contact_number", "studentmobile"],
+    "phonenumber2": ["motherscontactnumber", "secondarycontactnumber", "secondarycontact", "secondarycontactnumber", "studentsecondarycontact"],
     "city": ["user_city", "city", "selectedcity"],
     "course": ["course", "course_name", "course_code", "course_title", "responsetocourse"],
     "program": ["program", "program_name", "program_code", "program_title"],
@@ -43,7 +44,7 @@ def sanitize(filename, source):
     for colname in df.columns:
         try:
             df[colname] = df[colname].astype('str')
-            print(f"{colname} converted")
+            #print(f"{colname} converted")
         except ValueError:
             print(f"{colname} failed")
     # specific transformations
@@ -65,12 +66,14 @@ def sanitize(filename, source):
             alteredCols.append(k[i])
         else:
             k[i] = i
+    print(k)
     df = df.rename(columns=k)
     # print(alteredCols)
     # pprint(k)
     if "course" in list(df.columns.values):
         print("Course column found")
         df['course'] = df['course'].fillna("")
+        df['course'] = df['course'].replace("nan", "")
         for i in list(df['course'].values):
             if checkSimCourse(i):
                 kk[i] = checkSimCourse(i)
