@@ -4,7 +4,6 @@ import os
 from flask_cors import CORS
 
 from flask import Flask, flash, request, redirect, url_for
-from sqlalchemy import JSON
 from werkzeug.utils import secure_filename
 
 from core import sanitize
