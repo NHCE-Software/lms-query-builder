@@ -56,7 +56,12 @@ def sanitize(filename, source):
                                 "branch": "course"})
     if source == "sk":
         print(df.columns)
-        df = df.drop(['locality', 'lastname'], axis=1)
+        df = df.drop(['locality'], axis=1)
+        df['name'] = df[['firstname', 'lastname']].agg(" ".join, axis=1)
+        df = df.drop(["firstname", "lastname"], axis=1, errors='ignore') 
+
+
+
     if source == "wa":
         df['phonenumber'] = df[['fatherscontactnumber', "motherscontactnumber" , "studentmobile"]].agg(" ".join, axis=1)
         df = df.drop(['fatherscontactnumber', "motherscontactnumber" , "studentmobile"], axis=1, errors='ignore')
