@@ -4,7 +4,7 @@ import pandas as pd
 
 
 mapper = {
-    "name": ["name", "first_name", "firstname", "last_name", "username", "user_name", "from", "usersname", "studentname"],
+    "name": ["name", "first_name", "firstname", "last_name","nameofthestudent",  "username", "user_name", "usersname", "studentname"],
     "email": ["email", "user_email", "mail"],
     "phonenumber": ["phonenumber", "phno", "fatherscontactnumber", "mobile", "phone_number", "phone", "contact", "contact_number", "studentmobile"],
     "phonenumber2": ["motherscontactnumber", "secondarycontactnumber", "secondarycontact", "secondarycontactnumber", "studentsecondarycontact"],
@@ -47,6 +47,8 @@ def sanitize(filename, source):
             #print(f"{colname} converted")
         except ValueError:
             print(f"{colname} failed")
+    #generic drops
+    df = df.drop("unnamed", axis=1, errors='ignore') 
     # specific transformations
     if source == "cd":
         print(df.columns)
@@ -55,7 +57,10 @@ def sanitize(filename, source):
     if source == "sk":
         print(df.columns)
         df = df.drop(['locality', 'lastname'], axis=1)
-
+    if source == "wa":
+        df['phonenumber'] = df[['fatherscontactnumber', "motherscontactnumber" , "studentmobile"]].agg(" ".join, axis=1)
+        df = df.drop(['fatherscontactnumber', "motherscontactnumber" , "studentmobile"], axis=1, errors='ignore')
+    
     # print(list(df.columns.values))
     k = {}  # cols
     kk = {}  # courses
@@ -69,7 +74,7 @@ def sanitize(filename, source):
     print(k)
     df = df.rename(columns=k)
     # print(alteredCols)
-    # pprint(k)
+    pprint(k)
     if "course" in list(df.columns.values):
         print("Course column found")
         df['course'] = df['course'].fillna("")
