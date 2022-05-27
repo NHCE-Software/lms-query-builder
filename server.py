@@ -20,12 +20,12 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/')
+@app.route('/qb/test')
 def hello():
     return 'Hello, World!'
 
 
-@app.route('/upload', methods=['POST'])
+@app.route('/qb/upload', methods=['POST'])
 def upload_file():
 
     if request.method == 'POST':
@@ -49,4 +49,4 @@ def upload_file():
 
 if __name__ == "__main__":
     app.debug = True
-    app.run()
+    app.run(port=3369)
