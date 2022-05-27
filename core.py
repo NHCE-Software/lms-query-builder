@@ -13,18 +13,18 @@ mapper = {
     "program": ["program", "program_name", "program_code", "program_title"],
 }
 courseMapper = {
-    "BBA": ["BBA/BBM", "Bachelor of Business Administration (BBA)", "Student interested in BBA courses"],
-    "MBA": ["MBA/PGDM", "Master of Business Administration (MBA)", "Student interested in MBA/PGDM courses", "Master of Business Administration(MBA)"],
-    "MCA": ["MCA/PGPM", "Master of Computer Applications (MCA)", "Student interested in MCA courses", "Master of Computer Applications(MCA)"],
-    "CSE": ["B.E. in Computer Science and Engineering", "Computer Science & Engineering (CSE)"],
+    "BBA": ["bba","BBA/BBM", "Bachelor of Business Administration (BBA)", "Student interested in BBA courses"],
+    "MBA": ["MBA/PGDM","mba", "Master of Business Administration (MBA)", "Student interested in MBA/PGDM courses", "Master of Business Administration(MBA)"],
+    "MCA": ["mca","MCA/PGPM", "Master of Computer Applications (MCA)", "Student interested in MCA courses", "Master of Computer Applications(MCA)"],
+    "CSE": ["cse","B.E. in Computer Science and Engineering", "Computer Science & Engineering (CSE)"],
     "CSE in Data Science": ["B. E in Computer Science & Engineering (Data Science)", "Computer Science & Engineering (Data Science)"],
     "AI/ML": ["AIML", "B.E. in Artificial Intelligence and Machine Learning", "Artificial Intelligence and Machine Learning(AIML)", ],
-    "CIVIL": ["B.E. in Civil Engineering", "Civil Engineering (CIV)"],
-    "ECE": ["B.E. in Electronics and Communication Engineering", "Electronics & Communication Engineering (ECE)"],
-    "MECH": ["B.E. in Mechanical Engineering", "Mechanical Engineering (ME)", "Mechanical Engineering (MECH)"],
-    "ISE": ["B.E. in Information Science and Engineering", "B.E. in Information Technology", "Information Science & Engineering (ISE)"],
-    "B.Com": ["Bachelor of Commerce (B.Com.)", "Student interested in B.Com courses"],
-    "BCA": ["Bachelor of Computer Application (BCA)", "Student interested in BCA courses"],
+    "CIVIL": ["civil","B.E. in Civil Engineering", "Civil Engineering (CIV)"],
+    "ECE": ["ece","B.E. in Electronics and Communication Engineering", "Electronics & Communication Engineering (ECE)"],
+    "MECH": ["mech","B.E. in Mechanical Engineering", "Mechanical Engineering (ME)", "Mechanical Engineering (MECH)"],
+    "ISE": ["ise","B.E. in Information Science and Engineering", "B.E. in Information Technology", "Information Science & Engineering (ISE)"],
+    "B.Com": ["bcom","Bachelor of Commerce (B.Com.)", "Student interested in B.Com courses"],
+    "BCA": ["bca","Bachelor of Computer Application (BCA)", "Student interested in BCA courses"],
     "BE/B.Tech Courses": ["Student interested in B.E. / B.Tech courses"],
     "ME/M.Tech": ["Student interested in M.E./M.Tech courses", "MTech- Computer Science & Engg"],
     "EEE": ["Electrical & Electronics Engineering (EEE)"],
@@ -78,6 +78,7 @@ def sanitize(filename, source):
     if "course" in list(df.columns.values):
         print("Course column found")
         df['course'] = df['course'].fillna("")
+        df['course'] = df['course'].str.strip()
         df['course'] = df['course'].replace("nan", "")
         for i in list(df['course'].values):
             if checkSimCourse(i):
