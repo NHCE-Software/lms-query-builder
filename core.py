@@ -1,39 +1,48 @@
 from difflib import get_close_matches
 from pprint import pprint
+import numpy as np
 import pandas as pd
 
 
 mapper = {
-    "name": ["name", "first_name", "firstname", "last_name","nameofthestudent",  "username", "user_name", "usersname", "studentname"],
+    "name": ["name", "first_name", "firstname", "last_name", "nameofthestudent",  "username", "user_name", "usersname", "studentname"],
     "email": ["email", "user_email", "mail"],
     "phonenumber": ["phonenumber", "phno", "fatherscontactnumber", "mobile", "phone_number", "phone", "contact", "contact_number", "studentmobile"],
     "phonenumber2": ["motherscontactnumber", "secondarycontactnumber", "secondarycontact", "secondarycontactnumber", "studentsecondarycontact"],
     "city": ["user_city", "city", "selectedcity"],
+    "state": ["state", "user_state", "State",  "selectedstate", "Student State", "studentstate"],
     "course": ["course", "course_name", "course_code", "course_title", "responsetocourse"],
     "program": ["program", "program_name", "program_code", "program_title"],
 }
 courseMapper = {
-    "BBA": ["bba","BBA/BBM", "Bachelor of Business Administration (BBA)", "Student interested in BBA courses"],
-    "MBA": ["MBA/PGDM","mba", "Master of Business Administration (MBA)", "Student interested in MBA/PGDM courses", "Master of Business Administration(MBA)"],
-    "MCA": ["mca","MCA/PGPM", "Master of Computer Applications (MCA)", "Student interested in MCA courses", "Master of Computer Applications(MCA)"],
-    "CSE": ["cse","B.E. in Computer Science and Engineering", "Computer Science & Engineering (CSE)"],
+    "BBA": ["bba", "BBA/BBM", "Bachelor of Business Administration (BBA)", "Student interested in BBA courses"],
+    "MBA": ["MBA/PGDM", "mba", "Master of Business Administration (MBA)", "Student interested in MBA/PGDM courses", "Master of Business Administration(MBA)"],
+    "MCA": ["mca", "MCA/PGPM", "Master of Computer Applications (MCA)", "Student interested in MCA courses", "Master of Computer Applications(MCA)"],
+    "CSE": ["KCET (CSE)", "cse", "B.E. in Computer Science and Engineering", "Computer Science & Engineering (CSE)"],
     "CSE in Data Science": ["B. E in Computer Science & Engineering (Data Science)", "Computer Science & Engineering (Data Science)"],
     "AI/ML": ["AIML", "B.E. in Artificial Intelligence and Machine Learning", "Artificial Intelligence and Machine Learning(AIML)", ],
-    "CIVIL": ["civil","B.E. in Civil Engineering", "Civil Engineering (CIV)"],
-    "ECE": ["ece","B.E. in Electronics and Communication Engineering", "Electronics & Communication Engineering (ECE)"],
-    "MECH": ["mech","B.E. in Mechanical Engineering", "Mechanical Engineering (ME)", "Mechanical Engineering (MECH)"],
-    "ISE": ["ise","B.E. in Information Science and Engineering", "B.E. in Information Technology", "Information Science & Engineering (ISE)"],
-    "B.Com": ["bcom","Bachelor of Commerce (B.Com.)", "Student interested in B.Com courses"],
-    "BCA": ["bca","Bachelor of Computer Application (BCA)", "Student interested in BCA courses"],
+    "CIVIL": ["civil", "B.E. in Civil Engineering", "Civil Engineering (CIV)"],
+    "ECE": ["ece", "B.E. in Electronics and Communication Engineering", "Electronics & Communication Engineering (ECE)"],
+    "MECH": ["mech", "B.E. in Mechanical Engineering", "Mechanical Engineering (ME)", "Mechanical Engineering (MECH)"],
+    "ISE": ["ise", "B.E. in Information Science and Engineering", "B.E. in Information Technology", "Information Science & Engineering (ISE)"],
+    "B.Com": ["bcom", "Bachelor of Commerce (B.Com.)", "Student interested in B.Com courses"],
+    "BCA": ["bca", "Bachelor of Computer Application (BCA)", "Student interested in BCA courses"],
     "BE/B.Tech Courses": ["Student interested in B.E. / B.Tech courses"],
     "ME/M.Tech": ["Student interested in M.E./M.Tech courses", "MTech- Computer Science & Engg"],
-    "EEE": ["Electrical & Electronics Engineering (EEE)"],
-    "CE": ["Computer Engineering(CO)", "B.E. in Computer Engineering"],
+    "EEE": ["eee", "Electrical & Electronics Engineering (EEE)"],
+    "CE": ["ce", "Computer Engineering(CO)", "B.E. in Computer Engineering"],
 }
+
+customSource = ["name", "email", "phonenumber",
+                "city", "state", "program", "course", "calls"]
 
 
 def sanitize(filename, source):
     df = pd.read_csv("uploads/"+filename)
+    df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+    df = df.replace(r'^\s*$', np.nan, regex=True)
+    df = df.dropna(how='all')
+
     # sanitizing column names
     sanitizedCols = []
     for col in list(df.columns.values):
@@ -44,28 +53,29 @@ def sanitize(filename, source):
     for colname in df.columns:
         try:
             df[colname] = df[colname].astype('str')
-            #print(f"{colname} converted")
+            # print(f"{colname} converted")
         except ValueError:
             print(f"{colname} failed")
-    #generic drops
-    df = df.drop("unnamed", axis=1, errors='ignore') 
+    # generic drops
+    df = df.drop("unnamed", axis=1, errors='ignore')
     # specific transformations
     if source == "cd":
-        print(df.columns)
+        print("Applying CD transform", df.columns)
         df = df.rename(columns={"course": "program",
                                 "branch": "course"})
+        print("Applying CD transform", df.columns)
     if source == "sk":
         print(df.columns)
-        df = df.drop(['locality'], axis=1)
+        df = df.drop(['locality'], axis=1, errors='ignore')
         df['name'] = df[['firstname', 'lastname']].agg(" ".join, axis=1)
-        df = df.drop(["firstname", "lastname"], axis=1, errors='ignore') 
-
-
+        df = df.drop(["firstname", "lastname"], axis=1, errors='ignore')
 
     if source == "wa":
-        df['phonenumber'] = df[['fatherscontactnumber', "motherscontactnumber" , "studentmobile"]].agg(" ".join, axis=1)
-        df = df.drop(['fatherscontactnumber', "motherscontactnumber" , "studentmobile"], axis=1, errors='ignore')
-    
+        df['phonenumber'] = df[['fatherscontactnumber',
+                                "motherscontactnumber", "studentmobile"]].agg(" ".join, axis=1)
+        df = df.drop(['fatherscontactnumber', "motherscontactnumber",
+                     "studentmobile"], axis=1, errors='ignore')
+
     # print(list(df.columns.values))
     k = {}  # cols
     kk = {}  # courses
@@ -76,10 +86,10 @@ def sanitize(filename, source):
             alteredCols.append(k[i])
         else:
             k[i] = i
-    print(k)
+
     df = df.rename(columns=k)
-    # print(alteredCols)
     pprint(k)
+    print(alteredCols)
     if "course" in list(df.columns.values):
         print("Course column found")
         df['course'] = df['course'].fillna("")
@@ -90,12 +100,35 @@ def sanitize(filename, source):
                 kk[i] = checkSimCourse(i)
             else:
                 kk[i] = i
-        pprint(kk)
+        # pprint(kk)
         for old, new in kk.items():
             df["course"].replace([old.strip()], new.strip(), inplace=True)
     df = df[alteredCols]
-    print(df)
+    df = df.replace("nan", "")
+    df = df.replace("nan nan", "")
     return df.to_json(orient='records'), alteredCols
+
+
+def csanitize(filename):
+    df = pd.read_csv("uploads/"+filename, skip_blank_lines=True)
+    df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+    df = df.replace(r'^\s*$', np.nan, regex=True)
+    df = df.dropna(how='all')
+    print(df.columns)
+    df = df.fillna("")
+    # mapping columns
+    res = []
+    for i in range(len(df)):
+        obj = {}
+        for j in range(len(customSource)):
+            if(df.iat[i, j] == "nan"):
+                obj[customSource[j]] = ""
+            else:
+                obj[customSource[j]] = df.iat[i, j]
+        res.append(obj)
+    for i in res:
+        i["phonenumber"] = str(i["phonenumber"]).split(".")[0]
+    return res, customSource
 
 
 def sanitizeString(string):
