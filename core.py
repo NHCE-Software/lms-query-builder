@@ -67,14 +67,19 @@ def sanitize(filename, source):
     if source == "sk":
         print(df.columns)
         df = df.drop(['locality'], axis=1, errors='ignore')
+        df['firstname'] = df['firstname'].replace("nan", "")
+        df['lastname'] = df["lastname"].replace("nan", "")
         df['name'] = df[['firstname', 'lastname']].agg(" ".join, axis=1)
         df = df.drop(["firstname", "lastname"], axis=1, errors='ignore')
 
     if source == "wa":
-        df['phonenumber'] = df[['fatherscontactnumber',
-                                "motherscontactnumber", "studentmobile"]].agg(" ".join, axis=1)
-        df = df.drop(['fatherscontactnumber', "motherscontactnumber",
-                     "studentmobile"], axis=1, errors='ignore')
+        df = df.drop(['date', "createdat"], axis=1, errors='ignore')
+        try:
+            df['phonenumber'] = df[['fatherscontactnumber', "motherscontactnumber" , "studentmobile"]].agg(" ".join, axis=1)
+            df = df.drop(['fatherscontactnumber', "motherscontactnumber" , "studentmobile"], axis=1, errors='ignore')
+        except KeyError:
+            print("no phones")
+
 
     # print(list(df.columns.values))
     k = {}  # cols
