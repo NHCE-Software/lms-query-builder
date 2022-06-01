@@ -65,7 +65,7 @@ def cupload_file():
             #print("souceeeeee", request.form['source'])
             res, cols = csanitize(
                 filename=filename)
-
+    
     return {"data": json.loads(json.dumps(res, allow_nan=False)), "cols": cols}
 
 

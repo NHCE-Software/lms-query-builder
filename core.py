@@ -1,5 +1,6 @@
 from difflib import get_close_matches
 from pprint import pprint
+from itsdangerous import json
 import numpy as np
 import pandas as pd
 
@@ -34,7 +35,7 @@ courseMapper = {
 }
 
 customSource = ["name", "email", "phonenumber",
-                "city", "state", "program", "course", "calls"]
+                "city", "state", "program", "course", "calls", "createdAt"]
 
 
 def sanitize(filename, source):
@@ -119,8 +120,10 @@ def csanitize(filename):
     df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
     df = df.replace(r'^\s*$', np.nan, regex=True)
     df = df.dropna(how='all')
-    print(df.columns)
+    #print(df)
     df = df.fillna("")
+    df = df.astype(str)
+
     # mapping columns
     res = []
     for i in range(len(df)):
@@ -131,8 +134,11 @@ def csanitize(filename):
             else:
                 obj[customSource[j]] = df.iat[i, j]
         res.append(obj)
+    print(res)
+
     for i in res:
         i["phonenumber"] = str(i["phonenumber"]).split(".")[0]
+    print(df)
     return res, customSource
 
 
